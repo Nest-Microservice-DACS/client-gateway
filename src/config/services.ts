@@ -1,0 +1,1 @@
+export const CIRUGIAS_SERVICE = 'CIRUGIAS_SERVICE';
