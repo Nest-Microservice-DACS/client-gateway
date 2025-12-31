@@ -6,6 +6,7 @@ import {
   Get,
   Inject,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -14,6 +15,8 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { Console } from 'console';
 import { catchError, first, firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
+import { CreateCirugiaDto } from './dto/create-cirugia.dto';
+import { UpdateCirugiaDto } from './dto/update-cirugia.dto';
 
 @Controller('cirugias')
 export class CirugiasController {
@@ -22,8 +25,11 @@ export class CirugiasController {
   ) {}
 
   @Post()
-  createCirugia(@Body() createData: any) {
-    return 'This action adds a new cirugia';
+  createCirugia(@Body() createCirugiaDto: CreateCirugiaDto) {
+    return this.cirugiasClient.send(
+      { cmd: 'create_cirugia' },
+      createCirugiaDto,
+    );
   }
 
   @Get()
@@ -32,11 +38,11 @@ export class CirugiasController {
   }
 
   @Get(':id')
-  async getCirugiaById(@Param('id') id: string) {
+  async getCirugiaById(@Param('id', ParseIntPipe) id: number) {
     // Using pipe and catchError to handle exceptions
     return this.cirugiasClient.send({ cmd: 'get_cirugia_by_id' }, { id }).pipe(
-      catchError((error) => {
-        throw new RpcException(error);
+      catchError((err) => {
+        throw new RpcException(err);
       }),
     );
 
@@ -52,12 +58,25 @@ export class CirugiasController {
   }
 
   @Patch(':id')
-  updateCirugia(@Param('id') id: string, @Body() updateData: any) {
-    return 'This action updates a cirugia';
+  updateCirugia(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCirugiaDto: UpdateCirugiaDto,
+  ) {
+    return this.cirugiasClient
+      .send({ cmd: 'update_cirugia' }, { id, ...updateCirugiaDto })
+      .pipe(
+        catchError((err) => {
+          throw new RpcException(err);
+        }),
+      );
   }
 
   @Delete(':id')
-  deleteCirugia(@Param('id') id: string) {
-    return 'This action deletes a cirugia';
+  deleteCirugia(@Param('id', ParseIntPipe) id: number) {
+    return this.cirugiasClient.send({ cmd: 'delete_cirugia' }, { id }).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
+      }),
+    );
   }
 }
