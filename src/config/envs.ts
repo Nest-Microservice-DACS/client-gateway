@@ -1,11 +1,14 @@
 import 'dotenv/config';
 import * as joi from 'joi';
+import { PACIENTES_SERVICE } from './services';
 
 interface EnvVars {
   PORT: number;
   NODE_ENV: 'development' | 'production' | 'test';
   CIRUGIAS_MS_HOST: string;
   CIRUGIAS_MS_PORT: number;
+  PACIENTES_MS_HOST: string;
+  PACIENTES_MS_PORT: number;
 }
 
 const envsSchema = joi
@@ -32,4 +35,6 @@ export const envs = {
   NODE_ENV: envsVars.NODE_ENV,
   CIRUGIAS_MS_HOST: envsVars.CIRUGIAS_MS_HOST,
   CIRUGIAS_MS_PORT: envsVars.CIRUGIAS_MS_PORT,
+  PACIENTES_MS_HOST: envsVars.PACIENTES_MS_HOST,
+  PACIENTES_MS_PORT: envsVars.PACIENTES_MS_PORT,
 };
