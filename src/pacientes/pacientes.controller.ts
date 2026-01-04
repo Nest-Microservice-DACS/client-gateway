@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   Inject,
+  Query,
 } from '@nestjs/common';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { PACIENTES_SERVICE } from 'src/config/services';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { catchError } from 'rxjs';
+import { PacientePaginationDto } from './dto';
 
 @Controller('pacientes')
 export class PacientesController {
@@ -25,21 +28,28 @@ export class PacientesController {
   }
 
   @Get()
-  findAll() {
-    return this.pacientesService.send('findAllPacientes', {});
+  findAll(@Query() pacientePaginationDto: PacientePaginationDto) {
+     return this.pacientesService.send('findAllPacientes', pacientePaginationDto);
   }
-
+ 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pacientesService.send('findOnePaciente', +id);
+  async findOne(@Param('id') id: string) {
+    return this.pacientesService.send('findOnePaciente', +id).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
+      }),
+    );
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updatePacienteDto: UpdatePacienteDto,
-  ) { 
-    return this.pacientesService.send('updatePaciente', { id: +id, ...updatePacienteDto });
+  ) {
+    return this.pacientesService.send('updatePaciente', {
+      ...updatePacienteDto,
+      id: +id,
+    });
   }
 
   @Delete(':id')
