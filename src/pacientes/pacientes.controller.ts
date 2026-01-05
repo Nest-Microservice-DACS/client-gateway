@@ -8,13 +8,16 @@ import {
   Delete,
   Inject,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { PACIENTES_SERVICE } from 'src/config/services';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
-import { PacientePaginationDto } from './dto';
+import { PacientePaginationDto, StatusDto } from './dto';
+import { PaginationDto } from 'src/common';
+import { PacienteStatus } from './enum/pacientes.enum';
 
 @Controller('pacientes')
 export class PacientesController {
@@ -29,10 +32,13 @@ export class PacientesController {
 
   @Get()
   findAll(@Query() pacientePaginationDto: PacientePaginationDto) {
-     return this.pacientesService.send('findAllPacientes', pacientePaginationDto);
+    return this.pacientesService.send(
+      'findAllPacientes',
+      pacientePaginationDto,
+    );
   }
- 
-  @Get(':id')
+
+  @Get('id/:id')
   async findOne(@Param('id') id: string) {
     return this.pacientesService.send('findOnePaciente', +id).pipe(
       catchError((err) => {
@@ -41,19 +47,46 @@ export class PacientesController {
     );
   }
 
+  @Get(':status')
+  findByStatus(
+    @Param() statusDto: StatusDto,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.pacientesService
+      .send('findAllPacientes', { ...paginationDto, status: statusDto.status })
+      .pipe(
+        catchError((err) => {
+          throw new RpcException(err);
+        }),
+      );
+  }
+
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePacienteDto: UpdatePacienteDto,
   ) {
     return this.pacientesService.send('updatePaciente', {
       ...updatePacienteDto,
-      id: +id,
+      id: id,
     });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pacientesService.send('removePaciente', +id);
+  
+  @Patch('status/:id')
+  changeStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: StatusDto,
+  ) {
+    return this.pacientesService
+      .send('changePacienteStatus', {
+        id: id,
+        status: statusDto.status,
+      })
+      .pipe(
+        catchError((err) => {
+          throw new RpcException(err);
+        }),
+      );
   }
 }
