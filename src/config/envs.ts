@@ -9,6 +9,8 @@ interface EnvVars {
   CIRUGIAS_MS_PORT: number;
   PACIENTES_MS_HOST: string;
   PACIENTES_MS_PORT: number;
+  PERSONAL_MS_HOST: string;
+  PERSONAL_MS_PORT: number;
 }
 
 const envsSchema = joi
@@ -20,6 +22,10 @@ const envsSchema = joi
       .default('development'),
     CIRUGIAS_MS_HOST: joi.string().required(),
     CIRUGIAS_MS_PORT: joi.number().required(),
+    PACIENTES_MS_HOST: joi.string().required(),
+    PACIENTES_MS_PORT: joi.number().required(),
+    PERSONAL_MS_HOST: joi.string().required(),
+    PERSONAL_MS_PORT: joi.number().required(),
   })
   .unknown(true);
 
@@ -37,4 +43,6 @@ export const envs = {
   CIRUGIAS_MS_PORT: envsVars.CIRUGIAS_MS_PORT,
   PACIENTES_MS_HOST: envsVars.PACIENTES_MS_HOST,
   PACIENTES_MS_PORT: envsVars.PACIENTES_MS_PORT,
+  PERSONAL_MS_HOST: envsVars.PERSONAL_MS_HOST,
+  PERSONAL_MS_PORT: envsVars.PERSONAL_MS_PORT,
 };
