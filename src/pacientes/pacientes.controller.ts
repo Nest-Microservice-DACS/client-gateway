@@ -33,7 +33,7 @@ export class PacientesController {
   @Get()
   findAll(@Query() pacientePaginationDto: PacientePaginationDto) {
     return this.pacientesService.send(
-      'findAllPacientes',
+      {cmd: 'find_all_pacientes'},
       pacientePaginationDto,
     );
   }
