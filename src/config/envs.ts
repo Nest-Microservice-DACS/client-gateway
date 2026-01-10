@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import * as joi from 'joi';
-import { PACIENTES_SERVICE } from './services';
 
 interface EnvVars {
   PORT: number;
@@ -11,6 +10,10 @@ interface EnvVars {
   PACIENTES_MS_PORT: number;
   PERSONAL_MS_HOST: string;
   PERSONAL_MS_PORT: number;
+  SERVICIOS_MS_HOST: string;
+  SERVICIOS_MS_PORT: number;
+  QUIROFANOS_MS_HOST: string;
+  QUIROFANOS_MS_PORT: number;
 }
 
 const envsSchema = joi
@@ -26,6 +29,10 @@ const envsSchema = joi
     PACIENTES_MS_PORT: joi.number().required(),
     PERSONAL_MS_HOST: joi.string().required(),
     PERSONAL_MS_PORT: joi.number().required(),
+    SERVICIOS_MS_HOST: joi.string().required(),
+    SERVICIOS_MS_PORT: joi.number().required(),
+    QUIROFANOS_MS_HOST: joi.string().required(),
+    QUIROFANOS_MS_PORT: joi.number().required(),
   })
   .unknown(true);
 
@@ -45,4 +52,8 @@ export const envs = {
   PACIENTES_MS_PORT: envsVars.PACIENTES_MS_PORT,
   PERSONAL_MS_HOST: envsVars.PERSONAL_MS_HOST,
   PERSONAL_MS_PORT: envsVars.PERSONAL_MS_PORT,
+  SERVICIOS_MS_HOST: envsVars.SERVICIOS_MS_HOST,
+  SERVICIOS_MS_PORT: envsVars.SERVICIOS_MS_PORT,
+  QUIROFANOS_MS_HOST: envsVars.QUIROFANOS_MS_HOST,
+  QUIROFANOS_MS_PORT: envsVars.QUIROFANOS_MS_PORT,
 };
