@@ -7,11 +7,12 @@ import {
   Param,
   Delete,
   Inject,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { CreateAgendaDto } from './dto/create-agenda.dto';
-import { UpdateAgendaDto } from './dto/update-agenda.dto';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { AGENDA_SERVICE } from 'src/config/services';
+import { CreateTurnoDto, TurnoPaginationDto, UpdateTurnoDto } from './dto';
+import { catchError } from 'rxjs';
 
 @Controller('agenda')
 export class AgendaController {
@@ -20,27 +21,37 @@ export class AgendaController {
   ) {}
 
   @Post()
-  create(@Body() createAgendaDto: CreateAgendaDto) {
-    return this.agendaService.send({ cmd: 'create_turno' }, createAgendaDto);
+  create(@Body() createTurnoDto: CreateTurnoDto) {
+    return this.agendaService.send({ cmd: 'create_turno' }, createTurnoDto).pipe(catchError((err) => {
+      throw new RpcException(err);
+    }));
   }
 
   @Get()
-  findAll() {
-    return this.agendaService.send({ cmd: 'find_all_turnos' }, {});
+  findAll(@Body() turnoPaginationDto: TurnoPaginationDto) {
+    return this.agendaService.send({ cmd: 'find_all_turnos' }, turnoPaginationDto).pipe(catchError((err) => {
+      throw new RpcException(err);
+    }));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.agendaService.send({ cmd: 'find_one_turno' }, +id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.agendaService.send({ cmd: 'find_one_turno' }, id).pipe(catchError((err) => {
+      throw new RpcException(err);
+    }));
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAgendaDto: UpdateAgendaDto) {
-    return this.agendaService.send({ cmd: 'update_turno' }, { id: +id, ...updateAgendaDto });
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateTurnoDto: UpdateTurnoDto) {
+    return this.agendaService.send({ cmd: 'update_turno' }, updateTurnoDto).pipe(catchError((err) => {
+      throw new RpcException(err);
+    }));
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.agendaService.send({ cmd: 'remove_turno' }, +id);
+  remove(@Param('id', ParseIntPipe) cirugiaId: number) {
+    return this.agendaService.send({ cmd: 'remove_turno' }, cirugiaId).pipe(catchError((err) => {
+      throw new RpcException(err);
+    }));  
   }
 }
