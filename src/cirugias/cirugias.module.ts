@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { CirugiasController } from './cirugias.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CIRUGIAS_SERVICE, envs, PACIENTES_SERVICE } from 'src/config';
-import { CirugiasService } from './cirugias.service';
+import { CirugiasOrchestrator } from './cirugias.orchestrator';
+import { CirugiasClient } from './cirugias.client';
+import { PacientesClient } from 'src/pacientes/pacientes.client';
 
 @Module({
   controllers: [CirugiasController],
@@ -28,6 +30,10 @@ import { CirugiasService } from './cirugias.service';
       },
     ]),
   ],
-  providers: [CirugiasService],
+  providers: [
+    CirugiasOrchestrator,
+    CirugiasClient,
+    PacientesClient,
+  ],
 })
 export class CirugiasModule {}

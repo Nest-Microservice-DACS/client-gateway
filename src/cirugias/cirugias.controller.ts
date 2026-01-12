@@ -17,25 +17,25 @@ import { catchError, first, firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
 import { CreateCirugiaDto } from './dto/create-cirugia.dto';
 import { UpdateCirugiaDto } from './dto/update-cirugia.dto';
-import { CirugiasService } from './cirugias.service';
+import { CirugiasOrchestrator } from './cirugias.orchestrator';
 
 @Controller('cirugias')
 export class CirugiasController {
-  constructor(private readonly cirugiasService: CirugiasService) {}
+  constructor(private readonly cirugiasOrchestrator: CirugiasOrchestrator) {}
 
   @Post()
-  createCirugia(@Body() createCirugiaDto: CreateCirugiaDto) {
-    return this.cirugiasService.createCirugia(createCirugiaDto);
+  async createCirugia(@Body() createCirugiaDto: CreateCirugiaDto) {
+    return this.cirugiasOrchestrator.createCirugia(createCirugiaDto);
   }
 
   @Get()
-  getAllCirugias(@Query() paginationDto: PaginationDto) {
-    return this.cirugiasService.getAllCirugias(paginationDto);
+  async getAllCirugias(@Query() paginationDto: PaginationDto) {
+    return this.cirugiasOrchestrator.getAllCirugias(paginationDto);
   }
 
   @Get(':id')
   async getCirugiaById(@Param('id', ParseIntPipe) id: number) {
-    return this.cirugiasService.getCirugiaById(id).pipe(
+    return  this.cirugiasOrchestrator.getCirugiaById(id).pipe(
       catchError((err) => {
         throw new RpcException(err);
       }),
@@ -43,23 +43,23 @@ export class CirugiasController {
   }
 
   @Patch(':id')
-  updateCirugia(
+  async updateCirugia(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCirugiaDto: UpdateCirugiaDto,
   ) {
-    return this.cirugiasService.updateCirugia(id, updateCirugiaDto).pipe(
-      catchError((err) => {
-        throw new RpcException(err);
-      }),
-    );
+    try {
+      return await this.cirugiasOrchestrator.updateCirugia(id, updateCirugiaDto);
+    } catch (err) {
+      throw new RpcException(err);
+    }
   }
 
   @Delete(':id')
-  deleteCirugia(@Param('id', ParseIntPipe) id: number) {
-    return this.cirugiasService.deleteCirugia(id).pipe(
-      catchError((err) => {
-        throw new RpcException(err);
-      }),
-    );
+  async deleteCirugia(@Param('id', ParseIntPipe) id: number) {
+    try {
+      return await this.cirugiasOrchestrator.deleteCirugia(id);
+    } catch (err) {
+      throw new RpcException(err);
+    }
   }
 }

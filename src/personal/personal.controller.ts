@@ -17,7 +17,7 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { ChangeStatusPersonalDto } from './dto';
 import { catchError } from 'rxjs';
 import { PersonalPaginationDto } from './dto/personal-pagination.dto';
-import { StatusDto } from 'src/pacientes/dto';
+import { PacienteStatusDto } from 'src/pacientes/dto';
 import { PaginationDto } from 'src/common';
 
 @Controller('personal')
@@ -47,7 +47,7 @@ export class PersonalController {
   }
 
   @Get(':status')
-  findByStatus(@Param() status: StatusDto, @Query() paginationDto: PaginationDto) {
+  findByStatus(@Param() status: PacienteStatusDto, @Query() paginationDto: PaginationDto) {
     return this.personalService
       .send({ cmd: 'find_all_personal' }, { ...paginationDto, status: status.status })
       .pipe(

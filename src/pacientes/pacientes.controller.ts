@@ -15,19 +15,18 @@ import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { PACIENTES_SERVICE } from 'src/config/services';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
-import { PacientePaginationDto, StatusDto } from './dto';
+import { PacientePaginationDto, PacienteStatusDto } from './dto';
 import { PaginationDto } from 'src/common';
 import { PacienteStatus } from './enum/pacientes.enum';
+import { PacientesOrchestrator } from './pacientes.orchestrator';
 
 @Controller('pacientes')
 export class PacientesController {
-  constructor(
-    @Inject(PACIENTES_SERVICE) private readonly pacientesService: ClientProxy,
-  ) {}
+  constructor(private readonly pacientesOrchestrator: PacientesOrchestrator) {}
 
   @Post()
   create(@Body() createPacienteDto: CreatePacienteDto) {
-    return this.pacientesService.send('createPaciente', createPacienteDto).pipe(
+    return this.pacientesOrchestrator.createPaciente(createPacienteDto).pipe(
       catchError((err) => {
         throw new RpcException(err);
       }),
@@ -36,19 +35,18 @@ export class PacientesController {
 
   @Get()
   findAll(@Query() pacientePaginationDto: PacientePaginationDto) {
-    return this.pacientesService.send(
-      {cmd: 'find_all_pacientes'},
-      pacientePaginationDto,
-    ).pipe(
-      catchError((err) => {
-        throw new RpcException(err);
-      }),
-    );
+    return this.pacientesOrchestrator
+      .getAllPacientes(pacientePaginationDto)
+      .pipe(
+        catchError((err) => {
+          throw new RpcException(err);
+        }),
+      );
   }
 
   @Get('id/:id')
   async findOne(@Param('id') id: string) {
-    return this.pacientesService.send('findOnePaciente', +id).pipe(
+    return this.pacientesOrchestrator.getPacienteById(+id).pipe(
       catchError((err) => {
         throw new RpcException(err);
       }),
@@ -57,11 +55,11 @@ export class PacientesController {
 
   @Get(':status')
   findByStatus(
-    @Param() statusDto: StatusDto,
+    @Param() statusDto: PacienteStatusDto,
     @Query() paginationDto: PaginationDto,
   ) {
-    return this.pacientesService
-      .send({cmd: 'find_all_pacientes'}, { ...paginationDto, status: statusDto.status })
+    return this.pacientesOrchestrator
+      .getPacientesByStatus(statusDto.status, paginationDto)
       .pipe(
         catchError((err) => {
           throw new RpcException(err);
@@ -74,27 +72,24 @@ export class PacientesController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePacienteDto: UpdatePacienteDto,
   ) {
-    return this.pacientesService.send('updatePaciente', {
-      ...updatePacienteDto,
-      id: id,
-    });
-  }
-
-  
-  @Patch('status/:id')
-  changeStatus(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() statusDto: StatusDto,
-  ) {
-    return this.pacientesService
-      .send('changePacienteStatus', {
-        id: id,
-        status: statusDto.status,
-      })
+    return this.pacientesOrchestrator
+      .updatePaciente(id, updatePacienteDto)
       .pipe(
         catchError((err) => {
           throw new RpcException(err);
         }),
       );
+  }
+
+  @Patch('status/:id')
+  changeStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: PacienteStatusDto,
+  ) {
+    return this.pacientesOrchestrator.changeStatus(id, statusDto).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
+      }),
+    );
   }
 }

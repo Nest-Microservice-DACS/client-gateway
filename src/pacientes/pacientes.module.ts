@@ -3,10 +3,12 @@ import { PacientesController } from './pacientes.controller';
 import { PACIENTES_SERVICE } from 'src/config/services';
 import { envs } from 'src/config/envs';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { PacientesOrchestrator } from './pacientes.orchestrator';
+import { PacientesClient } from './pacientes.client';
 
 @Module({
   controllers: [PacientesController],
-  providers: [],
+  providers: [PacientesOrchestrator,PacientesClient],
   imports: [ ClientsModule.register([
     {
       name: PACIENTES_SERVICE,
