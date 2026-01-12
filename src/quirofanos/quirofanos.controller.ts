@@ -7,12 +7,18 @@ import {
   Param,
   Inject,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { QUIROFANOS_SERVICE } from 'src/config';
-import { ChangeQuirofanoStatusDto, CreateQuirofanoDto, UpdateQuirofanoDto } from './dto';
-
+import {
+  ChangeQuirofanoStatusDto,
+  CreateQuirofanoDto,
+  UpdateQuirofanoDto,
+} from './dto';
+import { PaginationDto } from 'src/common';
+import { catchError } from 'rxjs';
 
 @Controller('quirofanos')
 export class QuirofanosController {
@@ -20,17 +26,35 @@ export class QuirofanosController {
 
   @Post()
   create(@Body() createQuirofanoDto: CreateQuirofanoDto) {
-    return this.quirofanosService.send({ cmd: 'create_quirofano' }, createQuirofanoDto);
+    return this.quirofanosService.send(
+      { cmd: 'create_quirofano' },
+      createQuirofanoDto,
+    ).pipe(
+      catchError((error) => {
+        throw new RpcException(error.message);
+      }),
+    );
   }
 
   @Get()
-  findAll() {
-    return this.quirofanosService.send({ cmd: 'find_all_quirofanos' }, {});
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.quirofanosService.send(
+      { cmd: 'find_all_quirofanos' },
+      paginationDto,
+    ).pipe(
+      catchError((error) => {
+        throw new RpcException(error.message);
+      }),
+    );
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.quirofanosService.send({ cmd: 'find_one_quirofano' }, id);
+    return this.quirofanosService.send({ cmd: 'find_one_quirofano' }, id).pipe(
+      catchError((error) => {
+        throw new RpcException(error.message);
+      }),
+    );
   }
 
   @Patch(':id')
@@ -38,14 +62,35 @@ export class QuirofanosController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateQuirofanoDto: UpdateQuirofanoDto,
   ) {
-    return this.quirofanosService.send({ cmd: 'update_quirofano' }, {
-      id,
-      ...updateQuirofanoDto,
-    });
+    return this.quirofanosService
+      .send(
+        { cmd: 'update_quirofano' },
+        {
+          id,
+          ...updateQuirofanoDto,
+        },
+      )
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error.message);
+        }),
+      );
   }
 
   @Patch('status/:id')
-  changeStatus(@Param('id', ParseIntPipe) id: number, @Body() changeQuirofanoStatusDto: ChangeQuirofanoStatusDto) {
-    return this.quirofanosService.send({ cmd: 'change_quirofano_status' }, { id, ...changeQuirofanoStatusDto });
+  changeStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() changeQuirofanoStatusDto: ChangeQuirofanoStatusDto,
+  ) {
+    return this.quirofanosService
+      .send(
+        { cmd: 'change_quirofano_status' },
+        { id, ...changeQuirofanoStatusDto },
+      )
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error.message);
+        }),
+      );
   }
 }

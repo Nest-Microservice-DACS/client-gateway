@@ -14,6 +14,8 @@ interface EnvVars {
   SERVICIOS_MS_PORT: number;
   QUIROFANOS_MS_HOST: string;
   QUIROFANOS_MS_PORT: number;
+  AGENDA_MS_HOST: string;
+  AGENDA_MS_PORT: number;
 }
 
 const envsSchema = joi
@@ -33,6 +35,8 @@ const envsSchema = joi
     SERVICIOS_MS_PORT: joi.number().required(),
     QUIROFANOS_MS_HOST: joi.string().required(),
     QUIROFANOS_MS_PORT: joi.number().required(),
+    AGENDA_MS_HOST: joi.string().required(),
+    AGENDA_MS_PORT: joi.number().required(),
   })
   .unknown(true);
 
@@ -56,4 +60,6 @@ export const envs = {
   SERVICIOS_MS_PORT: envsVars.SERVICIOS_MS_PORT,
   QUIROFANOS_MS_HOST: envsVars.QUIROFANOS_MS_HOST,
   QUIROFANOS_MS_PORT: envsVars.QUIROFANOS_MS_PORT,
+  AGENDA_MS_HOST: envsVars.AGENDA_MS_HOST,
+  AGENDA_MS_PORT: envsVars.AGENDA_MS_PORT,
 };

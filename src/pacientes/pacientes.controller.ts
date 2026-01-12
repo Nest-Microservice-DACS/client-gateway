@@ -27,7 +27,11 @@ export class PacientesController {
 
   @Post()
   create(@Body() createPacienteDto: CreatePacienteDto) {
-    return this.pacientesService.send('createPaciente', createPacienteDto);
+    return this.pacientesService.send('createPaciente', createPacienteDto).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
+      }),
+    );
   }
 
   @Get()
@@ -35,6 +39,10 @@ export class PacientesController {
     return this.pacientesService.send(
       {cmd: 'find_all_pacientes'},
       pacientePaginationDto,
+    ).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
+      }),
     );
   }
 
@@ -53,7 +61,7 @@ export class PacientesController {
     @Query() paginationDto: PaginationDto,
   ) {
     return this.pacientesService
-      .send('findAllPacientes', { ...paginationDto, status: statusDto.status })
+      .send({cmd: 'find_all_pacientes'}, { ...paginationDto, status: statusDto.status })
       .pipe(
         catchError((err) => {
           throw new RpcException(err);
