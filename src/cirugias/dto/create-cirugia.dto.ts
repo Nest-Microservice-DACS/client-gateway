@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDateString, isNumber, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsDateString, isNumber, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class CreateCirugiaDto {
   @IsNumber()
@@ -25,4 +25,19 @@ export class CreateCirugiaDto {
 
   @IsString()
   prioridad: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CirugiaMedicosDto)
+  cirugiaMedicos: CirugiaMedicosDto[];
+}
+
+export class CirugiaMedicosDto {
+  @IsNumber()
+  @Type(() => Number)
+  medicoId: number;
+
+  @IsString()
+  rol: string; // CIRUJANO, AYUDANTE, ANESTESISTA, ...   implementar una clase Enum
 }

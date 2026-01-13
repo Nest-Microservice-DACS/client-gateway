@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { CirugiasController } from './cirugias.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CIRUGIAS_SERVICE, envs, PACIENTES_SERVICE } from 'src/config';
+import { CIRUGIAS_SERVICE, envs, PACIENTES_SERVICE, PERSONAL_SERVICE, QUIROFANOS_SERVICE, SERVICIOS_SERVICE } from 'src/config';
 import { CirugiasOrchestrator } from './cirugias.orchestrator';
 import { PacientesClient } from 'src/pacientes/clients/pacientes.client';
 import { CirugiasClient } from './clients/cirugias.client';
+import { QuirofanosClient } from 'src/quirofanos/clients/quirofanos.client';
+import { ServiciosClient } from 'src/servicios/clients/servicios.client';
+import { PersonalClient } from 'src/personal/clients/personal.client';
 
 @Module({
   controllers: [CirugiasController],
@@ -29,11 +32,44 @@ import { CirugiasClient } from './clients/cirugias.client';
         },
       },
     ]),
+    ClientsModule.register([
+      {
+        name: QUIROFANOS_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: envs.QUIROFANOS_MS_HOST,
+          port: envs.QUIROFANOS_MS_PORT,
+        },
+      },
+    ]),
+    ClientsModule.register([
+      {
+        name: SERVICIOS_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: envs.SERVICIOS_MS_HOST,
+          port: envs.SERVICIOS_MS_PORT,
+        },
+      },
+    ]),
+    ClientsModule.register([
+      {
+        name: PERSONAL_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: envs.PERSONAL_MS_HOST,
+          port: envs.PERSONAL_MS_PORT,
+        },
+      },
+    ]), 
   ],
   providers: [
     CirugiasOrchestrator,
     CirugiasClient,
     PacientesClient,
+    QuirofanosClient,
+    ServiciosClient,
+    PersonalClient,
   ],
 })
 export class CirugiasModule {}

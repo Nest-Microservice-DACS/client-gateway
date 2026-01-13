@@ -4,8 +4,6 @@ import { CIRUGIAS_SERVICE } from 'src/config';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { CreateCirugiaDto, UpdateCirugiaDto } from '../dto';
 
-
-
 @Injectable()
 export class CirugiasClient {
   constructor(
@@ -30,6 +28,6 @@ export class CirugiasClient {
   }
 
   deleteCirugia(id: number) {
-    return this.cirugiasClient.send({ cmd: 'delete_cirugia' }, { id });
+    return this.cirugiasClient.send({ cmd: 'delete_cirugia' }, id);
   }
 }
