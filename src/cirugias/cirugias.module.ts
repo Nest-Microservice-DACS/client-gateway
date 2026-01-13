@@ -3,8 +3,8 @@ import { CirugiasController } from './cirugias.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CIRUGIAS_SERVICE, envs, PACIENTES_SERVICE } from 'src/config';
 import { CirugiasOrchestrator } from './cirugias.orchestrator';
-import { CirugiasClient } from './cirugias.client';
-import { PacientesClient } from 'src/pacientes/pacientes.client';
+import { PacientesClient } from 'src/pacientes/clients/pacientes.client';
+import { CirugiasClient } from './clients/cirugias.client';
 
 @Module({
   controllers: [CirugiasController],

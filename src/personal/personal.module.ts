@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { PersonalController } from './personal.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { envs, PERSONAL_SERVICE } from 'src/config';
+import { PersonalOrchestrator } from './personal.orchestrator';
+import { PersonalClient } from './clients/personal.client';
 
 @Module({
   controllers: [PersonalController],
@@ -17,5 +19,6 @@ import { envs, PERSONAL_SERVICE } from 'src/config';
       },
     ]),
   ],
+  providers: [PersonalOrchestrator, PersonalClient],
 })
 export class PersonalModule {}

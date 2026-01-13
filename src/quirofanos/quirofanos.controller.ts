@@ -5,13 +5,11 @@ import {
   Body,
   Patch,
   Param,
-  Inject,
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
 
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { QUIROFANOS_SERVICE } from 'src/config';
+import { QuirofanosOrchestrator } from './quirofanos.orchestrator';
 import {
   ChangeQuirofanoStatusDto,
   CreateQuirofanoDto,
@@ -19,40 +17,37 @@ import {
 } from './dto';
 import { PaginationDto } from 'src/common';
 import { catchError } from 'rxjs';
+import { RpcException } from '@nestjs/microservices';
 
 @Controller('quirofanos')
 export class QuirofanosController {
-  @Inject(QUIROFANOS_SERVICE) private readonly quirofanosService: ClientProxy;
+  constructor(
+    private readonly quirofanosOrchestrator: QuirofanosOrchestrator,
+  ) {}
 
   @Post()
   create(@Body() createQuirofanoDto: CreateQuirofanoDto) {
-    return this.quirofanosService.send(
-      { cmd: 'create_quirofano' },
-      createQuirofanoDto,
-    ).pipe(
-      catchError((error) => {
-        throw new RpcException(error.message);
+    return this.quirofanosOrchestrator.createQuirofano(createQuirofanoDto).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
       }),
     );
   }
 
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
-    return this.quirofanosService.send(
-      { cmd: 'find_all_quirofanos' },
-      paginationDto,
-    ).pipe(
-      catchError((error) => {
-        throw new RpcException(error.message);
+    return this.quirofanosOrchestrator.getAllQuirofanos(paginationDto).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
       }),
     );
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.quirofanosService.send({ cmd: 'find_one_quirofano' }, id).pipe(
-      catchError((error) => {
-        throw new RpcException(error.message);
+    return this.quirofanosOrchestrator.getQuirofanoById(id).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
       }),
     );
   }
@@ -62,19 +57,11 @@ export class QuirofanosController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateQuirofanoDto: UpdateQuirofanoDto,
   ) {
-    return this.quirofanosService
-      .send(
-        { cmd: 'update_quirofano' },
-        {
-          id,
-          ...updateQuirofanoDto,
-        },
-      )
-      .pipe(
-        catchError((error) => {
-          throw new RpcException(error.message);
-        }),
-      );
+    return this.quirofanosOrchestrator.updateQuirofano(id, updateQuirofanoDto).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
+      }),
+    );
   }
 
   @Patch('status/:id')
@@ -82,14 +69,11 @@ export class QuirofanosController {
     @Param('id', ParseIntPipe) id: number,
     @Body() changeQuirofanoStatusDto: ChangeQuirofanoStatusDto,
   ) {
-    return this.quirofanosService
-      .send(
-        { cmd: 'change_quirofano_status' },
-        { id, ...changeQuirofanoStatusDto },
-      )
+    return this.quirofanosOrchestrator
+      .changeStatusQuirofano(id, changeQuirofanoStatusDto)
       .pipe(
-        catchError((error) => {
-          throw new RpcException(error.message);
+        catchError((err) => {
+          throw new RpcException(err);
         }),
       );
   }

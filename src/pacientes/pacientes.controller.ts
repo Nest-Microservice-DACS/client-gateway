@@ -53,20 +53,6 @@ export class PacientesController {
     );
   }
 
-  @Get(':status')
-  findByStatus(
-    @Param() statusDto: PacienteStatusDto,
-    @Query() paginationDto: PaginationDto,
-  ) {
-    return this.pacientesOrchestrator
-      .getPacientesByStatus(statusDto.status, paginationDto)
-      .pipe(
-        catchError((err) => {
-          throw new RpcException(err);
-        }),
-      );
-  }
-
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

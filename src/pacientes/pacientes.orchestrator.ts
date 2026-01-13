@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PacientesClient } from './pacientes.client';
+import { PacientesClient } from './clients/pacientes.client';
 import { PacienteStatusDto } from './dto';
 
 @Injectable()
@@ -17,10 +17,6 @@ export class PacientesOrchestrator {
   getPacienteById(id: number) {
     const paciente = this.pacientesClient.getPacienteById(id);
     return paciente; 
-  }
-
-  getPacientesByStatus(status: any, paginationDto: any) {
-    return this.pacientesClient.getPacientesByStatus(status, paginationDto);
   }
 
   updatePaciente(id: number, dto: any) {

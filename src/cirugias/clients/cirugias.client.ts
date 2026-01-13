@@ -2,8 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CIRUGIAS_SERVICE } from 'src/config';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { UpdateCirugiaDto } from './dto/update-cirugia.dto';
-import { CreateCirugiaDto } from './dto/create-cirugia.dto';
+import { CreateCirugiaDto, UpdateCirugiaDto } from '../dto';
+
+
 
 @Injectable()
 export class CirugiasClient {

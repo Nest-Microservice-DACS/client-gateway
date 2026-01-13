@@ -3,6 +3,8 @@ import { ServiciosController } from './servicios.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { SERVICIOS_SERVICE } from 'src/config/services';
 import { envs } from 'src/config';
+import { ServiciosOrchestrator } from './servicios.orchestrator';
+import { ServiciosClient } from './clients/servicios.client';
 
 @Module({
   controllers: [ServiciosController],
@@ -15,5 +17,6 @@ import { envs } from 'src/config';
       },
     ]),
   ],
+  providers: [ServiciosOrchestrator, ServiciosClient],
 })
 export class ServiciosModule {}

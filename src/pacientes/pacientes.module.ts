@@ -4,7 +4,7 @@ import { PACIENTES_SERVICE } from 'src/config/services';
 import { envs } from 'src/config/envs';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PacientesOrchestrator } from './pacientes.orchestrator';
-import { PacientesClient } from './pacientes.client';
+import { PacientesClient } from './clients/pacientes.client';
 
 @Module({
   controllers: [PacientesController],

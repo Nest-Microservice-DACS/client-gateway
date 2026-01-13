@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CirugiasClient } from './cirugias.client';
-import { PacientesClient } from 'src/pacientes/pacientes.client';
+import { PacientesClient } from 'src/pacientes/clients/pacientes.client';
 import { map, switchMap } from 'rxjs';
+import { CirugiasClient } from './clients/cirugias.client';
+import { CreateCirugiaDto, UpdateCirugiaDto } from './dto';
+import { PaginationDto } from 'src/common';
 
 @Injectable()
 export class CirugiasOrchestrator {
@@ -10,11 +12,11 @@ export class CirugiasOrchestrator {
     private readonly pacientesClient: PacientesClient,
   ) {}
 
-   createCirugia(dto: any) {
-    return this.cirugiasClient.createCirugia(dto);
+   createCirugia(createCirugiaDto: CreateCirugiaDto) {
+    return this.cirugiasClient.createCirugia(createCirugiaDto);
   }
 
-   getAllCirugias(paginationDto: any) {
+   getAllCirugias(paginationDto: PaginationDto) {
     return this.cirugiasClient.getAllCirugias(paginationDto);
   }
 
@@ -32,8 +34,8 @@ export class CirugiasOrchestrator {
     );
   }
 
-  updateCirugia(id: number, dto: any) {
-    return this.cirugiasClient.updateCirugia(id, dto);
+  updateCirugia(id: number, updateCirugiaDto: UpdateCirugiaDto) {
+    return this.cirugiasClient.updateCirugia(id, updateCirugiaDto);
   }
 
   deleteCirugia(id: number) {

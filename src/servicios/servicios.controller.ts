@@ -6,48 +6,39 @@ import {
   Patch,
   Param,
   Delete,
-  Inject,
-  ParseIntPipe,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CreateServicioDto } from './dto/create-servicio.dto';
 import { UpdateServicioDto } from './dto/update-servicio.dto';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { SERVICIOS_SERVICE } from 'src/config';
+import { ServiciosOrchestrator } from './servicios.orchestrator';
 import { PaginationDto } from 'src/common';
 import { catchError } from 'rxjs';
+import { RpcException } from '@nestjs/microservices';
 
 @Controller('servicios')
 export class ServiciosController {
-  constructor(
-    @Inject(SERVICIOS_SERVICE) private readonly serviciosService: ClientProxy,
-  ) {}
+  constructor(private readonly serviciosOrchestrator: ServiciosOrchestrator) {}
+
   @Post()
   create(@Body() createServicioDto: CreateServicioDto) {
-    return this.serviciosService.send(
-      { cmd: 'create_servicio' },
-      createServicioDto,
-    ).pipe(
-      catchError((error) => {
-        throw new RpcException(error.message);
+    return this.serviciosOrchestrator.createServicio(createServicioDto).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
       }),
     );
   }
 
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
-    return this.serviciosService.send({ cmd: 'get_servicios' }, paginationDto).pipe(
-      catchError((error) => {
-        throw new RpcException(error.message);
-      }),
-    );
+    return this.serviciosOrchestrator.getAllServicios(paginationDto);
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.serviciosService.send({ cmd: 'get_servicio_by_id' }, id).pipe(
-      catchError((error) => {
-        throw new RpcException(error.message);
+    return this.serviciosOrchestrator.getServicioById(id).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
       }),
     );
   }
@@ -57,21 +48,20 @@ export class ServiciosController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateServicioDto: UpdateServicioDto,
   ) {
-    return this.serviciosService.send(
-      { cmd: 'update_servicio' },
-      { id, ...updateServicioDto },
-    ).pipe(
-      catchError((error) => {
-        throw new RpcException(error.message);
-      }),
-    );
+    return this.serviciosOrchestrator
+      .updateServicio(id, updateServicioDto)
+      .pipe(
+        catchError((err) => {
+          throw new RpcException(err);
+        }),
+      );
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.serviciosService.send({ cmd: 'remove_servicio' }, id).pipe(
-      catchError((error) => {
-        throw new RpcException(error.message);
+    return this.serviciosOrchestrator.deleteServicio(id).pipe(
+      catchError((err) => {
+        throw new RpcException(err);
       }),
     );
   }

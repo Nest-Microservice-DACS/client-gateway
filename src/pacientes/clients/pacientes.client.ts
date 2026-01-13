@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CIRUGIAS_SERVICE, PACIENTES_SERVICE } from 'src/config';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { CreatePacienteDto, PacienteStatusDto, UpdatePacienteDto } from './dto';
+import { CreatePacienteDto, PacienteStatusDto, UpdatePacienteDto } from '../dto';
 
 @Injectable()
 export class PacientesClient {
@@ -16,17 +16,7 @@ export class PacientesClient {
   }
 
   getAllPacientes(paginationDto: PaginationDto) {
-    return this.pacientesClient.send({ cmd: 'get_pacientes' }, paginationDto);
-  }
-
-  getPacientesByStatus(
-    status: PacienteStatusDto,
-    paginationDto: PaginationDto,
-  ) {
-    return this.pacientesClient.send(
-      { cmd: 'get_pacientes_by_status' },
-      { status, ...paginationDto },
-    );
+    return this.pacientesClient.send({ cmd: 'get_all_pacientes' }, paginationDto);
   }
 
   getPacienteById(id: number) {

@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 import { QuirofanosController } from './quirofanos.controller';
 import { envs, QUIROFANOS_SERVICE } from 'src/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { QuirofanosOrchestrator } from './quirofanos.orchestrator';
+import { QuirofanosClient } from './clients/quirofanos.client';
 
 @Module({
   controllers: [QuirofanosController],
@@ -18,5 +20,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       },
     ]),
   ],
+  providers: [QuirofanosOrchestrator, QuirofanosClient],
 })
 export class QuirofanosModule {}
