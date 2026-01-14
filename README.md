@@ -6,20 +6,25 @@ Este módulo es un API REST desarrollado con NestJS para la gestión de agendas,
 
 ### Tabla de Contenidos
 - [Descripción](#descripción)
+- [Estado](#Estado)
+- [Tech Stack del proyecto](#Tech-Stack-del-proyecto)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Instalación](#instalación)
 - [Ejecución](#ejecución)
 - [Endpoints Principales](#endpoints-principales)
 - [Configuración](#configuración)
-- [Estado](#Estado)
+
 
 ---
 
 ## Descripción
 Este gateway centraliza y orquesta las operaciones de los distintos microservicios hospitalarios, facilitando la integración y el acceso seguro a los recursos.
 
+## Estado
+Proyecto en **fase de desarrollo** - Funcionalidades core implementadas. Mejoras y optimizaciones en progreso.
 
-## Tech Stack del proyecto:
+
+## Tech Stack del proyecto
 - Framework: NestJS v11 (API REST con TypeScript)
 - Autenticación: Integracion con Keycloak + Passport.js (JWT con JWKS-RSA)
 - Microservicios: @nestjs/microservices (comunicación entre servicios mediante RPC )
@@ -108,5 +113,3 @@ Variables de entorno principales (ver `src/config/envs.ts`):
 - `KEYCLOAK_CLIENT_ID`: ID del cliente
 - `KEYCLOAK_SECRET`: Secreto del cliente
 
-## Estado
-Proyecto en **fase de desarrollo** - Funcionalidades core implementadas. Mejoras y optimizaciones en progreso.
