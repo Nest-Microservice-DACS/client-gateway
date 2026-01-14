@@ -17,12 +17,16 @@ Este módulo es un API REST desarrollado con NestJS para la gestión de agendas,
 
 ---
 
+# Documentación 
+
+## Diagrama de clases simplificado:
+![Diagrama de clases](assets/diagrama.png)
+
 ## Descripción
 Este gateway centraliza y orquesta las operaciones de los distintos microservicios hospitalarios, facilitando la integración y el acceso seguro a los recursos.
 
 ## Estado
 Proyecto en **fase de desarrollo** - Funcionalidades core implementadas. Mejoras y optimizaciones en progreso.
-
 
 ## Tech Stack del proyecto
 - Framework: NestJS v11 (API REST con TypeScript)
