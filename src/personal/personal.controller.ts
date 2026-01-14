@@ -21,9 +21,12 @@ import { AuthGuard } from '@nestjs/passport';
 
 @UseGuards(AuthGuard('keycloak'))
 @Controller('personal')
+// Controlador para gestionar personal médico
 export class PersonalController {
+  // Inyectar orquestador de personal
   constructor(private readonly personalOrchestrator: PersonalOrchestrator) {}
 
+  // POST - Crear nuevo personal
   @Post()
   create(@Body() createPersonalDto: CreatePersonalDto) {
     return this.personalOrchestrator.createPersonal(createPersonalDto).pipe(
@@ -33,6 +36,7 @@ export class PersonalController {
     );
   }
 
+  // GET - Obtener todo el personal con paginación
   @Get()
   findAll(@Query() personalPaginationDto: PersonalPaginationDto) {
     return this.personalOrchestrator.getAllPersonal(personalPaginationDto).pipe(
@@ -42,6 +46,7 @@ export class PersonalController {
     );
   }
 
+  // GET - Obtener personal por estado
   @Get(':status')
   findByStatus(
     @Param() status: PersonalStatusDto,
@@ -56,6 +61,7 @@ export class PersonalController {
       );
   }
 
+  // GET - Obtener personal por ID
   @Get('id/:id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.personalOrchestrator.getPersonalById(id).pipe(
@@ -65,6 +71,7 @@ export class PersonalController {
     );
   }
 
+  // PATCH - Actualizar personal
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -77,6 +84,7 @@ export class PersonalController {
     );
   }
 
+  // PATCH - Cambiar estado del personal
   @Patch('status/:id')
   changeStatus(
     @Param('id', ParseIntPipe) id: number,

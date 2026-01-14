@@ -23,11 +23,14 @@ import { AuthGuard } from '@nestjs/passport';
 
 @UseGuards(AuthGuard('keycloak'))
 @Controller('quirofanos')
+// Controlador para gestionar quirófanos
 export class QuirofanosController {
+  // Inyectar orquestador de quirófanos
   constructor(
     private readonly quirofanosOrchestrator: QuirofanosOrchestrator,
   ) {}
 
+  // POST - Crear nuevo quirófano
   @Post()
   create(@Body() createQuirofanoDto: CreateQuirofanoDto) {
     return this.quirofanosOrchestrator.createQuirofano(createQuirofanoDto).pipe(
@@ -37,6 +40,7 @@ export class QuirofanosController {
     );
   }
 
+  // GET - Obtener todos los quirófanos con paginación
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.quirofanosOrchestrator.getAllQuirofanos(paginationDto).pipe(
@@ -46,6 +50,7 @@ export class QuirofanosController {
     );
   }
 
+  // GET - Obtener quirófano por ID
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.quirofanosOrchestrator.getQuirofanoById(id).pipe(
@@ -55,6 +60,7 @@ export class QuirofanosController {
     );
   }
 
+  // PATCH - Actualizar quirófano
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -69,6 +75,7 @@ export class QuirofanosController {
       );
   }
 
+  // PATCH - Cambiar estado del quirófano
   @Patch('status/:id')
   changeStatus(
     @Param('id', ParseIntPipe) id: number,

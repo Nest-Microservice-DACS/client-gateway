@@ -18,9 +18,12 @@ import { catchError } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('agenda')
+// Controlador para gestionar agenda de turnos
 export class AgendaController {
+  // Inyectar orquestador para operaciones de agenda
   constructor(private readonly agendaOrchestrator: AgendaOrchestrator) {}
 
+  // POST - Crear un nuevo turno
   @Post()
   create(@Body() createTurnoDto: CreateTurnoDto) {
     return this.agendaOrchestrator.createTurno(createTurnoDto).pipe(catchError((err) => {
@@ -28,6 +31,7 @@ export class AgendaController {
     }));
   }
 
+  // GET - Obtener todos los turnos con paginación (Se puede filtrar por estado, quirófano y rango de fechas)
   @Get()
   findAll(@Query() turnoPaginationDto: TurnoPaginationDto) {
     return this.agendaOrchestrator.getAllTurnos(turnoPaginationDto).pipe(catchError((err) => {
@@ -35,6 +39,7 @@ export class AgendaController {
     }));  
   }
 
+  // GET - Obtener un turno por ID
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.agendaOrchestrator.getTurnoById(id).pipe(catchError((err) => {
@@ -42,6 +47,7 @@ export class AgendaController {
     }));
   }
 
+  // PATCH - Actualizar turno 
   @UseGuards(AuthGuard('keycloak'))
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateTurnoDto: UpdateTurnoDto) {
@@ -50,6 +56,7 @@ export class AgendaController {
     }));
   }
 
+  // DELETE - Eliminar un turno 
   @UseGuards(AuthGuard('keycloak'))
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {

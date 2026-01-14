@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PacientesClient } from 'src/pacientes/clients/pacientes.client';
 import { map, Observable, switchMap } from 'rxjs';
-import { from } from 'rxjs';
-import { catchError, toArray } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import { CirugiasClient } from './clients/cirugias.client';
 import { CreateCirugiaDto, UpdateCirugiaDto } from './dto';
 import { PaginationDto } from 'src/common';
-import { any } from 'joi';
 import { QuirofanosClient } from 'src/quirofanos/clients/quirofanos.client';
 import { ServiciosClient } from 'src/servicios/clients/servicios.client';
 import { AgendaClient } from 'src/agenda/clients/agenda.client';
@@ -16,8 +13,10 @@ import { ServicioResponseDto } from 'src/servicios/dto/servicio-response.dto';
 
 // IMPLEMENTAR: event bus / message broker (ej. RabbitMQ, Kafka, NATS) para mejorar la comunicacion entre microservicios y desacoplarlos
 
+// Servicio orquestador que coordina operaciones de cirugías con otros microservicios
 @Injectable()
 export class CirugiasOrchestrator {
+  // Inyectar clientes de diferentes módulos para coordinar llamadas
   constructor(
     private readonly cirugiasClient: CirugiasClient,
     private readonly pacientesClient: PacientesClient,
@@ -26,6 +25,7 @@ export class CirugiasOrchestrator {
     private readonly agendaClient: AgendaClient,
   ) {}
 
+  // Crea una cirugía: verifica disponibilidad del quirófano, obtiene duración del servicio y crea el turno
   createCirugia(createCirugiaDto: CreateCirugiaDto) {
     return this.serviciosClient
       .getServicioById(createCirugiaDto.servicioId)
@@ -76,6 +76,7 @@ export class CirugiasOrchestrator {
       );
   }
 
+  // Obtiene todas las cirugías y enriquece cada una con datos de paciente, quirófano y servicio
   getAllCirugias(paginationDto: PaginationDto) {
     return this.cirugiasClient.getAllCirugias(paginationDto).pipe(
       switchMap((result: any) => {
@@ -88,7 +89,7 @@ export class CirugiasOrchestrator {
           return [result];
         }
 
-        // Generar un array de observables para cada cirugía, mapeando paciente, quirofano y servicio
+        // Generar observables para mapear paciente, quirófano y servicio en paralelo
         const { of } = require('rxjs');
         const { catchError } = require('rxjs/operators');
         const cirugiasWithRelations$ = cirugias.map((cirugia: any) =>
@@ -127,13 +128,14 @@ export class CirugiasOrchestrator {
     );
   }
 
+  // Obtiene una cirugía por ID y la enriquece con datos de paciente, quirófano y servicio
   getCirugiaById(id: number) {
     const { of } = require('rxjs');
     const { catchError } = require('rxjs/operators');
     return this.cirugiasClient.getCirugiaById(id).pipe(
       switchMap((cirugia: any) =>
         forkJoin({
-          // Mapear paciente, quirofano y servicio, manejando errores
+          // Mapear paciente, quirófano y servicio de forma paralela, ignorando errores
           paciente: this.pacientesClient
             .getPacienteById(cirugia.pacienteId)
             .pipe(catchError(() => of(null))),
@@ -158,10 +160,12 @@ export class CirugiasOrchestrator {
     );
   }
 
+  // Actualiza una cirugía existente
   updateCirugia(id: number, updateCirugiaDto: UpdateCirugiaDto) {
     return this.cirugiasClient.updateCirugia(id, updateCirugiaDto);
   }
 
+  // Elimina una cirugía y sus turnos asociados
   deleteCirugia(id: number) {
     // Primero eliminar turnos asociados
     return this.agendaClient.deleteTurno(id).pipe(

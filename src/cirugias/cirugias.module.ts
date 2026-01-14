@@ -13,6 +13,7 @@ import { AgendaClient } from 'src/agenda/clients/agenda.client';
 @Module({
   controllers: [CirugiasController],
   imports: [
+    // Microservicios registrados con sus respectivas configuraciones
     ClientsModule.register([
       {
         name: CIRUGIAS_SERVICE,

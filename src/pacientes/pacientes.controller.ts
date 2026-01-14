@@ -24,9 +24,12 @@ import { AuthGuard } from '@nestjs/passport';
 
 @UseGuards(AuthGuard('keycloak'))
 @Controller('pacientes')
+// Controlador para gestionar pacientes
 export class PacientesController {
+  // Inyectar orquestador de pacientes
   constructor(private readonly pacientesOrchestrator: PacientesOrchestrator) {}
 
+  // POST - Crear nuevo paciente
   @Post()
   create(@Body() createPacienteDto: CreatePacienteDto) {
     return this.pacientesOrchestrator.createPaciente(createPacienteDto).pipe(
@@ -36,6 +39,7 @@ export class PacientesController {
     );
   }
 
+  // GET - Obtener todos los pacientes con paginación
   @Get()
   findAll(@Query() pacientePaginationDto: PacientePaginationDto) {
     return this.pacientesOrchestrator
@@ -47,6 +51,7 @@ export class PacientesController {
       );
   }
 
+  // GET - Obtener paciente por ID
   @Get('id/:id')
   async findOne(@Param('id') id: string) {
     return this.pacientesOrchestrator.getPacienteById(+id).pipe(
@@ -56,6 +61,7 @@ export class PacientesController {
     );
   }
 
+  // PATCH - Actualizar paciente
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -70,6 +76,7 @@ export class PacientesController {
       );
   }
 
+  // PATCH - Cambiar estado del paciente
   @Patch('status/:id')
   changeStatus(
     @Param('id', ParseIntPipe) id: number,
