@@ -28,7 +28,7 @@ Este gateway centraliza y orquesta las operaciones de los distintos microservici
 - Validación de esquemas: Joi
 - Async: RxJS (Observables)
 - Docker: Para levantar Keycloak localmente (ver docker-compose.yml) y Micro servicios (Ver en sus respectivos repositorios)
-- Patrones: 
+- Algunos patrones utilizados: 
   - Orchestrator Pattern: Cada módulo tiene un orquestador que coordina llamadas a otros microservicios
   - Client Pattern: Clientes dedicados para cada microservicio
   - DTO Pattern: Para validación de datos en entrada/salida
