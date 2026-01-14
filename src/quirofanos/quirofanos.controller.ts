@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { QuirofanosOrchestrator } from './quirofanos.orchestrator';
@@ -18,7 +19,9 @@ import {
 import { PaginationDto } from 'src/common';
 import { catchError } from 'rxjs';
 import { RpcException } from '@nestjs/microservices';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('keycloak'))
 @Controller('quirofanos')
 export class QuirofanosController {
   constructor(
@@ -57,11 +60,13 @@ export class QuirofanosController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateQuirofanoDto: UpdateQuirofanoDto,
   ) {
-    return this.quirofanosOrchestrator.updateQuirofano(id, updateQuirofanoDto).pipe(
-      catchError((err) => {
-        throw new RpcException(err);
-      }),
-    );
+    return this.quirofanosOrchestrator
+      .updateQuirofano(id, updateQuirofanoDto)
+      .pipe(
+        catchError((err) => {
+          throw new RpcException(err);
+        }),
+      );
   }
 
   @Patch('status/:id')

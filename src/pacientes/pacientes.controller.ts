@@ -9,6 +9,7 @@ import {
   Inject,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
@@ -19,7 +20,9 @@ import { PacientePaginationDto, PacienteStatusDto } from './dto';
 import { PaginationDto } from 'src/common';
 import { PacienteStatus } from './enum/pacientes.enum';
 import { PacientesOrchestrator } from './pacientes.orchestrator';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('keycloak'))
 @Controller('pacientes')
 export class PacientesController {
   constructor(private readonly pacientesOrchestrator: PacientesOrchestrator) {}

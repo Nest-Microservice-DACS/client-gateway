@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateServicioDto } from './dto/create-servicio.dto';
 import { UpdateServicioDto } from './dto/update-servicio.dto';
@@ -15,7 +16,9 @@ import { ServiciosOrchestrator } from './servicios.orchestrator';
 import { PaginationDto } from 'src/common';
 import { catchError } from 'rxjs';
 import { RpcException } from '@nestjs/microservices';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('keycloak'))
 @Controller('servicios')
 export class ServiciosController {
   constructor(private readonly serviciosOrchestrator: ServiciosOrchestrator) {}

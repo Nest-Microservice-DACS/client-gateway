@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { Console } from 'console';
@@ -18,7 +19,9 @@ import { PaginationDto } from 'src/common';
 import { CreateCirugiaDto } from './dto/create-cirugia.dto';
 import { UpdateCirugiaDto } from './dto/update-cirugia.dto';
 import { CirugiasOrchestrator } from './cirugias.orchestrator';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('keycloak'))
 @Controller('cirugias')
 export class CirugiasController {
   constructor(private readonly cirugiasOrchestrator: CirugiasOrchestrator) {}

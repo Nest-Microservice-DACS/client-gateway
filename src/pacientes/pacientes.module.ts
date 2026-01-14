@@ -5,19 +5,23 @@ import { envs } from 'src/config/envs';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PacientesOrchestrator } from './pacientes.orchestrator';
 import { PacientesClient } from './clients/pacientes.client';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   controllers: [PacientesController],
-  providers: [PacientesOrchestrator,PacientesClient],
-  imports: [ ClientsModule.register([
-    {
-      name: PACIENTES_SERVICE,
-      transport: Transport.TCP,
-      options: {
-        host: envs.PACIENTES_MS_HOST,
-        port: envs.PACIENTES_MS_PORT,
+  providers: [PacientesOrchestrator, PacientesClient],
+  imports: [
+    AuthModule,
+    ClientsModule.register([
+      {
+        name: PACIENTES_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: envs.PACIENTES_MS_HOST,
+          port: envs.PACIENTES_MS_PORT,
+        },
       },
-    },
-  ]), ],
+    ]),
+  ],
 })
 export class PacientesModule {}

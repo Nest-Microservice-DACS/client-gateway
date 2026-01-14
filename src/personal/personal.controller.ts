@@ -5,10 +5,9 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
-  Inject,
   ParseIntPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreatePersonalDto } from './dto/create-personal.dto';
 import { UpdatePersonalDto } from './dto/update-personal.dto';
@@ -16,10 +15,11 @@ import { PersonalOrchestrator } from './personal.orchestrator';
 import { ChangeStatusPersonalDto, PersonalStatusDto } from './dto';
 import { catchError } from 'rxjs';
 import { PersonalPaginationDto } from './dto/personal-pagination.dto';
-import { PacienteStatusDto } from 'src/pacientes/dto';
 import { PaginationDto } from 'src/common';
 import { RpcException } from '@nestjs/microservices';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('keycloak'))
 @Controller('personal')
 export class PersonalController {
   constructor(private readonly personalOrchestrator: PersonalOrchestrator) {}
