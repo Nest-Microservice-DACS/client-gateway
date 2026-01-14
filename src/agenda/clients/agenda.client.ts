@@ -8,6 +8,7 @@ import { TurnoPaginationDto } from '../dto/turno-pagination.dto';
 
 @Injectable()
 export class AgendaClient {
+  
   constructor(
     @Inject(AGENDA_SERVICE)
     private readonly agendaClient: ClientProxy,

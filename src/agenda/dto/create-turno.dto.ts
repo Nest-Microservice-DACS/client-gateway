@@ -15,18 +15,16 @@ export class CreateTurnoDto {
   quirofanoId: number;
 
   @IsDateString()
-  @Type(() => Date)
-  startTime: Date;
+  startTime: string;
 
   @IsDateString()
-  @Type(() => Date)
-  endTime: Date;
+  endTime: string;
 
-  @IsOptional()
-  @IsEnum(AgendaStatusList, {
-    message: `Possible status values are ${Object.values(AgendaStatusList).join(', ')}`,
-  })
-  status: AgendaStatus = AgendaStatus.AVAILABLE;
+  // @IsOptional()
+  // @IsEnum(AgendaStatusList, {
+  //   message: `Possible status values are ${Object.values(AgendaStatusList).join(', ')}`,
+  // })
+  // status?: AgendaStatus = AgendaStatus.AVAILABLE;
 
   @IsNumber()
   @IsPositive()

@@ -4,6 +4,7 @@ import { ChangeTurnoStatusDto, CreateTurnoDto, TurnoPaginationDto, UpdateTurnoDt
 
 @Injectable()
 export class AgendaOrchestrator {
+
   constructor(private readonly agendaClient: AgendaClient) {}
 
   createTurno(dto: CreateTurnoDto) {

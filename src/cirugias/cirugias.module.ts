@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { CirugiasController } from './cirugias.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CIRUGIAS_SERVICE, envs, PACIENTES_SERVICE, PERSONAL_SERVICE, QUIROFANOS_SERVICE, SERVICIOS_SERVICE } from 'src/config';
+import { AGENDA_SERVICE, CIRUGIAS_SERVICE, envs, PACIENTES_SERVICE, PERSONAL_SERVICE, QUIROFANOS_SERVICE, SERVICIOS_SERVICE } from 'src/config';
 import { CirugiasOrchestrator } from './cirugias.orchestrator';
 import { PacientesClient } from 'src/pacientes/clients/pacientes.client';
 import { CirugiasClient } from './clients/cirugias.client';
 import { QuirofanosClient } from 'src/quirofanos/clients/quirofanos.client';
 import { ServiciosClient } from 'src/servicios/clients/servicios.client';
 import { PersonalClient } from 'src/personal/clients/personal.client';
+import { AgendaClient } from 'src/agenda/clients/agenda.client';
 
 @Module({
   controllers: [CirugiasController],
@@ -62,6 +63,16 @@ import { PersonalClient } from 'src/personal/clients/personal.client';
         },
       },
     ]), 
+    ClientsModule.register([
+      {
+        name: AGENDA_SERVICE,
+        transport: Transport.TCP,
+        options: {
+          host: envs.AGENDA_MS_HOST,
+          port: envs.AGENDA_MS_PORT,
+        },
+      },
+    ]),
   ],
   providers: [
     CirugiasOrchestrator,
@@ -70,6 +81,7 @@ import { PersonalClient } from 'src/personal/clients/personal.client';
     QuirofanosClient,
     ServiciosClient,
     PersonalClient,
+    AgendaClient,
   ],
 })
 export class CirugiasModule {}
