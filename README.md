@@ -11,7 +11,7 @@ Este módulo es un API REST desarrollado con NestJS para la gestión de agendas,
 - [Ejecución](#ejecución)
 - [Endpoints Principales](#endpoints-principales)
 - [Configuración](#configuración)
-- [Créditos](#créditos)
+- [Estado](#Estado)
 
 ---
 
