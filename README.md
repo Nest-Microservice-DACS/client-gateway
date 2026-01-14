@@ -19,7 +19,7 @@ Este módulo es un API REST desarrollado con NestJS para la gestión de agendas,
 
 # Documentación 
 
-## Diagrama de clases simplificado:
+## Diagrama de clases simplificado
 ![Diagrama de clases](assets/diagrama.png)
 
 ## Descripción
