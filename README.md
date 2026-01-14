@@ -28,11 +28,12 @@ Proyecto en **fase de desarrollo** - Funcionalidades core implementadas. Mejoras
 - Framework: NestJS v11 (API REST con TypeScript)
 - Autenticación: Integracion con Keycloak + Passport.js (JWT con JWKS-RSA)
 - Microservicios: @nestjs/microservices (comunicación entre servicios mediante RPC )
+- Bases de datos: PostgreSQL (en microservicios)
 - Validación: class-validator + class-transformer
 - Configuración: dotenv + @nestjs/config
 - Validación de esquemas: Joi
 - Async: RxJS (Observables)
-- Docker: Para levantar Keycloak localmente (ver docker-compose.yml) y Micro servicios (Ver en sus respectivos repositorios)
+- Docker: Para levantar Keycloak localmente (ver docker-compose.yml) y bases de datos de los micro servicios (Ver en sus respectivos repositorios)
 - Algunos patrones utilizados: 
   - Orchestrator Pattern: Cada módulo tiene un orquestador que coordina llamadas a otros microservicios
   - Client Pattern: Clientes dedicados para cada microservicio
