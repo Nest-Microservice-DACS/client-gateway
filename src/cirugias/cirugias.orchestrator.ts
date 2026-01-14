@@ -14,6 +14,8 @@ import { AgendaClient } from 'src/agenda/clients/agenda.client';
 import { CirugiaResponseDto } from './dto/cirugia-response.dto';
 import { ServicioResponseDto } from 'src/servicios/dto/servicio-response.dto';
 
+// IMPLEMENTAR: event bus / message broker (ej. RabbitMQ, Kafka, NATS) para mejorar la comunicacion entre microservicios y desacoplarlos
+
 @Injectable()
 export class CirugiasOrchestrator {
   constructor(
@@ -25,43 +27,53 @@ export class CirugiasOrchestrator {
   ) {}
 
   createCirugia(createCirugiaDto: CreateCirugiaDto) {
-    return this.serviciosClient.getServicioById(createCirugiaDto.servicioId).pipe(
-      map((servicio: ServicioResponseDto) => servicio.duracion),
-      switchMap((tiempoEstimado: number) => {
-        return this.agendaClient.getAllTurnos({
-          fechaInicio: createCirugiaDto.fecha,
-          fechaFin: createCirugiaDto.fecha,
-          quirofanoId: createCirugiaDto.quirofanoId,
-        }).pipe(
-          switchMap((turnosExistentes: any[]) => {
-            // Si hay turnos existentes, no se puede crear la cirugía
-            if (turnosExistentes.length > 0) {
-              throw new Error('Ya existe un turno para este quirófano en la fecha seleccionada.');
-            }
-            // Si no hay turnos, crear la cirugía y luego el turno
-            return this.cirugiasClient.createCirugia(createCirugiaDto).pipe(
-              switchMap((cirugiaCreated: CirugiaResponseDto) => {
-                const startDate = new Date(createCirugiaDto.fecha);
-                const endDate = new Date(startDate.getTime() + tiempoEstimado * 60000);
-                const endTime = endDate.toISOString();
+    return this.serviciosClient
+      .getServicioById(createCirugiaDto.servicioId)
+      .pipe(
+        map((servicio: ServicioResponseDto) => servicio.duracion),
+        switchMap((tiempoEstimado: number) => {
+          return this.agendaClient
+            .getAllTurnos({
+              fechaInicio: createCirugiaDto.fecha,
+              fechaFin: createCirugiaDto.fecha,
+              quirofanoId: createCirugiaDto.quirofanoId,
+            })
+            .pipe(
+              switchMap((turnosExistentes: any[]) => {
+                // Si hay turnos existentes, no se puede crear la cirugía
+                if (turnosExistentes.length > 0) {
+                  throw new Error(
+                    'Ya existe un turno para este quirófano en la fecha seleccionada.',
+                  );
+                }
+                // Si no hay turnos, crear la cirugía y luego el turno
+                return this.cirugiasClient.createCirugia(createCirugiaDto).pipe(
+                  switchMap((cirugiaCreated: CirugiaResponseDto) => {
+                    const startDate = new Date(createCirugiaDto.fecha);
+                    const endDate = new Date(
+                      startDate.getTime() + tiempoEstimado * 60000,
+                    );
+                    const endTime = endDate.toISOString();
 
-                return this.agendaClient.createTurno({
-                  cirugiaId: cirugiaCreated.id,
-                  quirofanoId: createCirugiaDto.quirofanoId,
-                  startTime: startDate.toISOString(),
-                  endTime: endTime,
-                }).pipe(
-                  map((turnoCreado) => ({
-                    cirugia: cirugiaCreated,
-                    turno: turnoCreado,
-                  }))
+                    return this.agendaClient
+                      .createTurno({
+                        cirugiaId: cirugiaCreated.id,
+                        quirofanoId: createCirugiaDto.quirofanoId,
+                        startTime: startDate.toISOString(),
+                        endTime: endTime,
+                      })
+                      .pipe(
+                        map((turnoCreado) => ({
+                          cirugia: cirugiaCreated,
+                          turno: turnoCreado,
+                        })),
+                      );
+                  }),
                 );
-              })
+              }),
             );
-          })
-        );
-      })
-    );
+        }),
+      );
   }
 
   getAllCirugias(paginationDto: PaginationDto) {
@@ -77,13 +89,19 @@ export class CirugiasOrchestrator {
         }
 
         // Generar un array de observables para cada cirugía, mapeando paciente, quirofano y servicio
+        const { of } = require('rxjs');
+        const { catchError } = require('rxjs/operators');
         const cirugiasWithRelations$ = cirugias.map((cirugia: any) =>
           forkJoin({
-            paciente: this.pacientesClient.getPacienteById(cirugia.pacienteId),
-            quirofano: this.quirofanosClient.getQuirofanoById(
-              cirugia.quirofanoId,
-            ),
-            servicio: this.serviciosClient.getServicioById(cirugia.servicioId),
+            paciente: this.pacientesClient
+              .getPacienteById(cirugia.pacienteId)
+              .pipe(catchError(() => of(null))),
+            quirofano: this.quirofanosClient
+              .getQuirofanoById(cirugia.quirofanoId)
+              .pipe(catchError(() => of(null))),
+            servicio: this.serviciosClient
+              .getServicioById(cirugia.servicioId)
+              .pipe(catchError(() => of(null))),
           }).pipe(
             map(({ paciente, quirofano, servicio }) => {
               const { pacienteId, quirofanoId, servicioId, ...rest } = cirugia;
@@ -110,14 +128,21 @@ export class CirugiasOrchestrator {
   }
 
   getCirugiaById(id: number) {
+    const { of } = require('rxjs');
+    const { catchError } = require('rxjs/operators');
     return this.cirugiasClient.getCirugiaById(id).pipe(
       switchMap((cirugia: any) =>
         forkJoin({
-          paciente: this.pacientesClient.getPacienteById(cirugia.pacienteId),
-          quirofano: this.quirofanosClient.getQuirofanoById(
-            cirugia.quirofanoId,
-          ),
-          servicio: this.serviciosClient.getServicioById(cirugia.servicioId),
+          // Mapear paciente, quirofano y servicio, manejando errores
+          paciente: this.pacientesClient
+            .getPacienteById(cirugia.pacienteId)
+            .pipe(catchError(() => of(null))),
+          quirofano: this.quirofanosClient
+            .getQuirofanoById(cirugia.quirofanoId)
+            .pipe(catchError(() => of(null))),
+          servicio: this.serviciosClient
+            .getServicioById(cirugia.servicioId)
+            .pipe(catchError(() => of(null))),
         }).pipe(
           map(({ paciente, quirofano, servicio }) => {
             const { pacienteId, quirofanoId, servicioId, ...rest } = cirugia;
@@ -138,6 +163,18 @@ export class CirugiasOrchestrator {
   }
 
   deleteCirugia(id: number) {
-    return this.cirugiasClient.deleteCirugia(id);
+    // Primero eliminar turnos asociados
+    return this.agendaClient.deleteTurno(id).pipe(
+      switchMap(() =>
+        // Luego eliminar la cirugía
+        this.cirugiasClient
+          .deleteCirugia(id)
+          .pipe(
+            map(() => ({
+              message: `Cirugía ${id} y sus turnos fueron eliminados`,
+            })),
+          ),
+      ),
+    );
   }
 }
