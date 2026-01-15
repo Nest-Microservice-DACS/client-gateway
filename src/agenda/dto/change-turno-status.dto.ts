@@ -1,13 +1,13 @@
 import { IsEnum, IsNumber, IsPositive } from 'class-validator';
-import { AgendaStatus, AgendaStatusList } from '../enum/agenda.enum';
+import { ShiftStatus, ShiftStatusList } from '../enum/shift.enum';
 
 export class ChangeTurnoStatusDto {
   @IsNumber()
   @IsPositive()
   cirugiaId: number;
 
-  @IsEnum(AgendaStatusList, {
-    message: `Possible status values are ${Object.values(AgendaStatusList).join(', ')}`,
+  @IsEnum(ShiftStatusList, {
+    message: `Possible status values are ${Object.values(ShiftStatusList).join(', ')}`,
   })
-  status: AgendaStatus;
+  status: ShiftStatus;
 }

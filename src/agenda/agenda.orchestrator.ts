@@ -1,33 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { AgendaClient } from './clients/agenda.client';
-import { ChangeTurnoStatusDto, CreateTurnoDto, TurnoPaginationDto, UpdateTurnoDto } from './dto';
+import { ScheduleClient } from './clients/shift.client';
+import { CreateShiftDto, ShiftPaginationDto, UpdateShiftDto } from './dto';
 
 @Injectable()
-export class AgendaOrchestrator {
+export class ShiftOrchestrator {
 
-  constructor(private readonly agendaClient: AgendaClient) {}
+  constructor(private readonly scheduleClient: ScheduleClient) {}
 
-  createTurno(dto: CreateTurnoDto) {
-    return this.agendaClient.createTurno(dto);
+  createShift(dto: CreateShiftDto) {
+    return this.scheduleClient.createShift(dto);
   }
 
-  getAllTurnos(paginationDto: TurnoPaginationDto) {
-    return this.agendaClient.getAllTurnos(paginationDto);
+  getAllShifts(paginationDto: ShiftPaginationDto) {
+    return this.scheduleClient.getAllShifts(paginationDto);
   }
 
-  getTurnoById(id: number) {
-    return this.agendaClient.getTurnoById(id);
+  getShiftById(id: number) {
+    return this.scheduleClient.getShiftById(id);
   }
 
-  updateTurno(id: number, updateTurnoDto: UpdateTurnoDto) {
-    return this.agendaClient.updateTurno(id, updateTurnoDto);
+  updateShift(id: number, updateShiftDto: UpdateShiftDto) {
+    return this.scheduleClient.updateShift(id, updateShiftDto);
   }
 
 //   changeTurnoStatus(id: number, dto: ChangeTurnoStatusDto) {
 //     return this.agendaClient.changeTurnoStatus(id, dto);
 //   }
 
-  deleteTurno(id: number) {
-    return this.agendaClient.deleteTurno(id);
+  deleteShift(id: number) {
+    return this.scheduleClient.deleteShift(id);
   }
 }

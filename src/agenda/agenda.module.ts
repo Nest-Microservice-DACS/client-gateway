@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { AgendaController } from './agenda.controller';
+import { ScheduleController } from './schedule.controller';
 import { Client, ClientsModule, Transport } from '@nestjs/microservices';
-import { AGENDA_SERVICE, envs } from 'src/config';
-import { AgendaOrchestrator } from './agenda.orchestrator';
-import { AgendaClient } from './clients/agenda.client';
+import { SCHEDULE_SERVICE, envs } from 'src/config';
+import { ShiftOrchestrator } from './agenda.orchestrator';
+import { ScheduleClient } from './clients/shift.client';
 
 @Module({
-  controllers: [AgendaController],
-  providers: [AgendaOrchestrator, AgendaClient],
+  controllers: [ScheduleController],
+  providers: [ShiftOrchestrator, ScheduleClient],
   imports: [
     ClientsModule.register([
       {
-        name: AGENDA_SERVICE,
+        name: SCHEDULE_SERVICE,
         transport: Transport.TCP,
         options: {
           host: envs.AGENDA_MS_HOST,

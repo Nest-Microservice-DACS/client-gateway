@@ -4,16 +4,16 @@ import * as joi from 'joi';
 interface EnvVars {
   PORT: number;
   NODE_ENV: 'development' | 'production' | 'test';
-  CIRUGIAS_MS_HOST: string;
-  CIRUGIAS_MS_PORT: number;
-  PACIENTES_MS_HOST: string;
-  PACIENTES_MS_PORT: number;
+  SURGERY_MS_HOST: string;
+  SURGERY_MS_PORT: number;
+  PATIENT_MS_HOST: string;
+  PATIENT_MS_PORT: number;
   PERSONAL_MS_HOST: string;
   PERSONAL_MS_PORT: number;
-  SERVICIOS_MS_HOST: string;
-  SERVICIOS_MS_PORT: number;
-  QUIROFANOS_MS_HOST: string;
-  QUIROFANOS_MS_PORT: number;
+  SERVICE_MS_HOST: string;
+  SERVICE_MS_PORT: number;
+  OPERATING_ROOM_MS_HOST: string;
+  OPERATING_ROOM_MS_PORT: number;
   AGENDA_MS_HOST: string;
   AGENDA_MS_PORT: number;
 }
@@ -25,16 +25,16 @@ const envsSchema = joi
       .string()
       .valid('development', 'production', 'test')
       .default('development'),
-    CIRUGIAS_MS_HOST: joi.string().required(),
-    CIRUGIAS_MS_PORT: joi.number().required(),
-    PACIENTES_MS_HOST: joi.string().required(),
-    PACIENTES_MS_PORT: joi.number().required(),
+    SURGERY_MS_HOST: joi.string().required(),
+    SURGERY_MS_PORT: joi.number().required(),
+    PATIENT_MS_HOST: joi.string().required(),
+    PATIENT_MS_PORT: joi.number().required(),
     PERSONAL_MS_HOST: joi.string().required(),
     PERSONAL_MS_PORT: joi.number().required(),
-    SERVICIOS_MS_HOST: joi.string().required(),
-    SERVICIOS_MS_PORT: joi.number().required(),
-    QUIROFANOS_MS_HOST: joi.string().required(),
-    QUIROFANOS_MS_PORT: joi.number().required(),
+    SERVICE_MS_HOST: joi.string().required(),
+    SERVICE_MS_PORT: joi.number().required(),
+    OPERATING_ROOM_MS_HOST: joi.string().required(),
+    OPERATING_ROOM_MS_PORT: joi.number().required(),
     AGENDA_MS_HOST: joi.string().required(),
     AGENDA_MS_PORT: joi.number().required(),
   })
@@ -50,16 +50,16 @@ const envsVars: EnvVars = value;
 export const envs = {
   PORT: envsVars.PORT,
   NODE_ENV: envsVars.NODE_ENV,
-  CIRUGIAS_MS_HOST: envsVars.CIRUGIAS_MS_HOST,
-  CIRUGIAS_MS_PORT: envsVars.CIRUGIAS_MS_PORT,
-  PACIENTES_MS_HOST: envsVars.PACIENTES_MS_HOST,
-  PACIENTES_MS_PORT: envsVars.PACIENTES_MS_PORT,
+  SURGERY_MS_HOST: envsVars.SURGERY_MS_HOST,
+  SURGERY_MS_PORT: envsVars.SURGERY_MS_PORT,
+  PATIENT_MS_HOST: envsVars.PATIENT_MS_HOST,
+  PATIENT_MS_PORT: envsVars.PATIENT_MS_PORT,
   PERSONAL_MS_HOST: envsVars.PERSONAL_MS_HOST,
   PERSONAL_MS_PORT: envsVars.PERSONAL_MS_PORT,
-  SERVICIOS_MS_HOST: envsVars.SERVICIOS_MS_HOST,
-  SERVICIOS_MS_PORT: envsVars.SERVICIOS_MS_PORT,
-  QUIROFANOS_MS_HOST: envsVars.QUIROFANOS_MS_HOST,
-  QUIROFANOS_MS_PORT: envsVars.QUIROFANOS_MS_PORT,
+  SERVICE_MS_HOST: envsVars.SERVICE_MS_HOST,
+  SERVICE_MS_PORT: envsVars.SERVICE_MS_PORT,
+  OPERATING_ROOM_MS_HOST: envsVars.OPERATING_ROOM_MS_HOST,
+  OPERATING_ROOM_MS_PORT: envsVars.OPERATING_ROOM_MS_PORT,
   AGENDA_MS_HOST: envsVars.AGENDA_MS_HOST,
   AGENDA_MS_PORT: envsVars.AGENDA_MS_PORT,
 };

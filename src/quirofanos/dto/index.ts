@@ -1,3 +1,3 @@
-export * from './create-quirofano.dto';
-export * from './update-quirofano.dto';
-export * from './change-quirofano-status.dto';
+export * from './create-operating-room.dto';
+export * from './update-operating-room.dto';
+export * from './change-operating-room-status.dto';
