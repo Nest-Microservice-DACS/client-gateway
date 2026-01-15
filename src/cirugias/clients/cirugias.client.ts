@@ -2,7 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CIRUGIAS_SERVICE } from 'src/config';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { CreateCirugiaDto, UpdateCirugiaDto } from '../dto';
+import {
+  AddMedicosCirugiaDto,
+  CreateCirugiaDto,
+  RemoveMedicosCirugiaDto,
+  UpdateCirugiaDto,
+} from '../dto';
 
 @Injectable()
 export class CirugiasClient {
@@ -29,5 +34,23 @@ export class CirugiasClient {
 
   deleteCirugia(id: number) {
     return this.cirugiasClient.send({ cmd: 'delete_cirugia' }, id);
+  }
+
+  addMedicosToCirugia(cirugiaId: number, addMedicosDto: AddMedicosCirugiaDto) {
+    console.log('CirugiasClient - addMedicosToCirugia called:' + JSON.stringify({ cirugiaId, ...addMedicosDto }));
+    return this.cirugiasClient.send(
+      { cmd: 'add_medicos_to_cirugia' },
+      { cirugiaId, ...addMedicosDto },
+    );
+  }
+
+  removeMedicosFromCirugia(
+    cirugiaId: number,
+    removeMedicosDto: RemoveMedicosCirugiaDto,
+  ) {
+    return this.cirugiasClient.send(
+      { cmd: 'remove_medicos_from_cirugia' },
+      { cirugiaId, ...removeMedicosDto },
+    );
   }
 }

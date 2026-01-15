@@ -3,7 +3,12 @@ import { PacientesClient } from 'src/pacientes/clients/pacientes.client';
 import { map, Observable, switchMap } from 'rxjs';
 import { forkJoin } from 'rxjs';
 import { CirugiasClient } from './clients/cirugias.client';
-import { CreateCirugiaDto, UpdateCirugiaDto } from './dto';
+import {
+  AddMedicosCirugiaDto,
+  CreateCirugiaDto,
+  RemoveMedicosCirugiaDto,
+  UpdateCirugiaDto,
+} from './dto';
 import { PaginationDto } from 'src/common';
 import { QuirofanosClient } from 'src/quirofanos/clients/quirofanos.client';
 import { ServiciosClient } from 'src/servicios/clients/servicios.client';
@@ -171,14 +176,20 @@ export class CirugiasOrchestrator {
     return this.agendaClient.deleteTurno(id).pipe(
       switchMap(() =>
         // Luego eliminar la cirugía
-        this.cirugiasClient
-          .deleteCirugia(id)
-          .pipe(
-            map(() => ({
-              message: `Cirugía ${id} y sus turnos fueron eliminados`,
-            })),
-          ),
+        this.cirugiasClient.deleteCirugia(id).pipe(
+          map(() => ({
+            message: `Cirugía ${id} y sus turnos fueron eliminados`,
+          })),
+        ),
       ),
     );
+  }
+
+  addMedicosToCirugia(cirugiaId: number, addMedicosDto: AddMedicosCirugiaDto) {
+    return this.cirugiasClient.addMedicosToCirugia(cirugiaId, addMedicosDto);
+  }
+
+  removeMedicosFromCirugia(cirugiaId: number, removeMedicosDto: RemoveMedicosCirugiaDto) {
+    return this.cirugiasClient.removeMedicosFromCirugia(cirugiaId, removeMedicosDto);
   }
 }

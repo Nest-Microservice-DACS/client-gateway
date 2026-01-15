@@ -33,6 +33,7 @@ Este gateway centraliza y orquesta las operaciones de los distintos microservici
 - Autenticación: Integracion con Keycloak + Passport.js (JWT con JWKS-RSA)
 - Microservicios: @nestjs/microservices (comunicación entre servicios mediante RPC )
 - Bases de datos: PostgreSQL (en microservicios)
+- Prisma: ORM y toolkit para acceso y gestión de datos en bases de datos relacionales
 - Validación: class-validator + class-transformer
 - Configuración: dotenv + @nestjs/config
 - Validación de esquemas: Joi
