@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PacientesClient } from 'src/pacientes/clients/pacientes.client';
-import { map, Observable, switchMap } from 'rxjs';
+import { catchError, map, Observable, of, switchMap } from 'rxjs';
 import { forkJoin } from 'rxjs';
 import { CirugiasClient } from './clients/cirugias.client';
 import {
@@ -15,6 +15,7 @@ import { ServiciosClient } from 'src/servicios/clients/servicios.client';
 import { AgendaClient } from 'src/agenda/clients/agenda.client';
 import { CirugiaResponseDto } from './dto/cirugia-response.dto';
 import { ServicioResponseDto } from 'src/servicios/dto/servicio-response.dto';
+import { PersonalClient } from 'src/personal/clients/personal.client';
 
 // IMPLEMENTAR: event bus / message broker (ej. RabbitMQ, Kafka, NATS) para mejorar la comunicacion entre microservicios y desacoplarlos
 
@@ -28,6 +29,7 @@ export class CirugiasOrchestrator {
     private readonly quirofanosClient: QuirofanosClient,
     private readonly serviciosClient: ServiciosClient,
     private readonly agendaClient: AgendaClient,
+    private readonly personalClient: PersonalClient,
   ) {}
 
   // Crea una cirugía: verifica disponibilidad del quirófano, obtiene duración del servicio y crea el turno
@@ -94,41 +96,68 @@ export class CirugiasOrchestrator {
           return [result];
         }
 
-        // Generar observables para mapear paciente, quirófano y servicio en paralelo
-        const { of } = require('rxjs');
-        const { catchError } = require('rxjs/operators');
-        const cirugiasWithRelations$ = cirugias.map((cirugia: any) =>
-          forkJoin({
-            paciente: this.pacientesClient
-              .getPacienteById(cirugia.pacienteId)
-              .pipe(catchError(() => of(null))),
-            quirofano: this.quirofanosClient
-              .getQuirofanoById(cirugia.quirofanoId)
-              .pipe(catchError(() => of(null))),
-            servicio: this.serviciosClient
-              .getServicioById(cirugia.servicioId)
-              .pipe(catchError(() => of(null))),
-          }).pipe(
-            map(({ paciente, quirofano, servicio }) => {
-              const { pacienteId, quirofanoId, servicioId, ...rest } = cirugia;
-              return {
-                ...rest,
-                paciente,
-                quirofano,
-                servicio,
-              };
-            }),
+        // Obtener todos los IDs de médicos únicos de todas las cirugías
+        const allMedicoIds = [
+          ...new Set(
+            cirugias.flatMap((c: any) =>
+              (c.cirugiaMedicos || []).map((cm: any) => cm.medicoId),
+            ),
           ),
-        );
+        ];
 
-        // Ejecutar todas las llamadas en paralelo y devolver el array completo
-        return forkJoin(cirugiasWithRelations$).pipe(
-          map((mappedCirugias) =>
-            Array.isArray(result)
-              ? mappedCirugias
-              : { ...result, data: mappedCirugias },
-          ),
-        );
+        return this.personalClient
+          .getPersonalByIds(allMedicoIds as number[])
+          .pipe(
+            switchMap((allMedicos: any[]) => {
+              const cirugiasWithRelations$ = cirugias.map((cirugia: any) => {
+                const cirugiaMedicosList = cirugia.cirugiaMedicos || [];
+                const medicosConRol = cirugiaMedicosList
+                  .map((relacion: any) => {
+                    const medico = (allMedicos || []).find(
+                      (m: any) => m.id === relacion.medicoId,
+                    );
+                    return medico ? { ...medico, rol: relacion.rol } : null;
+                  })
+                  .filter(Boolean);
+                return forkJoin({
+                  paciente: this.pacientesClient
+                    .getPacienteById(cirugia.pacienteId)
+                    .pipe(catchError(() => of(null))),
+                  quirofano: this.quirofanosClient
+                    .getQuirofanoById(cirugia.quirofanoId)
+                    .pipe(catchError(() => of(null))),
+                  servicio: this.serviciosClient
+                    .getServicioById(cirugia.servicioId)
+                    .pipe(catchError(() => of(null))),
+                }).pipe(
+                  map(({ paciente, quirofano, servicio }) => {
+                    const {
+                      pacienteId,
+                      quirofanoId,
+                      servicioId,
+                      cirugiaMedicos,
+                      ...rest
+                    } = cirugia;
+                    return {
+                      ...rest,
+                      paciente,
+                      quirofano,
+                      servicio,
+                      medicos: medicosConRol,
+                    };
+                  }),
+                );
+              });
+              // Ejecutar todas las llamadas en paralelo y devolver el array completo
+              return forkJoin(cirugiasWithRelations$).pipe(
+                map((mappedCirugias) =>
+                  Array.isArray(result)
+                    ? mappedCirugias
+                    : { ...result, data: mappedCirugias },
+                ),
+              );
+            }),
+          );
       }),
     );
   }
@@ -136,7 +165,7 @@ export class CirugiasOrchestrator {
   // Obtiene una cirugía por ID y la enriquece con datos de paciente, quirófano y servicio
   getCirugiaById(id: number) {
     const { of } = require('rxjs');
-    const { catchError } = require('rxjs/operators');
+
     return this.cirugiasClient.getCirugiaById(id).pipe(
       switchMap((cirugia: any) =>
         forkJoin({
@@ -150,14 +179,36 @@ export class CirugiasOrchestrator {
           servicio: this.serviciosClient
             .getServicioById(cirugia.servicioId)
             .pipe(catchError(() => of(null))),
+          medicos: this.personalClient
+            .getPersonalByIds(
+              cirugia.cirugiaMedicos.map((cm: any) => cm.medicoId),
+            )
+            .pipe(catchError(() => of(null))),
         }).pipe(
-          map(({ paciente, quirofano, servicio }) => {
-            const { pacienteId, quirofanoId, servicioId, ...rest } = cirugia;
+          map(({ paciente, quirofano, servicio, medicos }) => {
+            const cirugiaMedicosList = cirugia.cirugiaMedicos || [];
+            const medicosArray = Array.isArray(medicos) ? medicos : [];
+            const medicosConRol = cirugiaMedicosList
+              .map((relacion: any) => {
+                const medico = medicosArray.find(
+                  (m: any) => m.id === relacion.medicoId,
+                );
+                return medico ? { ...medico, rol: relacion.rol } : null;
+              })
+              .filter(Boolean);
+            const {
+              pacienteId,
+              quirofanoId,
+              servicioId,
+              cirugiaMedicos,
+              ...rest
+            } = cirugia;
             return {
               ...rest,
               paciente,
               quirofano,
               servicio,
+              medicos: medicosConRol,
             };
           }),
         ),
@@ -189,7 +240,13 @@ export class CirugiasOrchestrator {
     return this.cirugiasClient.addMedicosToCirugia(cirugiaId, addMedicosDto);
   }
 
-  removeMedicosFromCirugia(cirugiaId: number, removeMedicosDto: RemoveMedicosCirugiaDto) {
-    return this.cirugiasClient.removeMedicosFromCirugia(cirugiaId, removeMedicosDto);
+  removeMedicosFromCirugia(
+    cirugiaId: number,
+    removeMedicosDto: RemoveMedicosCirugiaDto,
+  ) {
+    return this.cirugiasClient.removeMedicosFromCirugia(
+      cirugiaId,
+      removeMedicosDto,
+    );
   }
 }

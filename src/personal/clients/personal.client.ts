@@ -25,6 +25,11 @@ export class PersonalClient {
     return this.personalClient.send({ cmd: 'get_personal_by_id' }, id );
   }
 
+  getPersonalByIds(ids: number[]) {
+    console.log('PersonalClient - getPersonalByIds called with ids:', ids);
+    return this.personalClient.send({ cmd: 'get_personal_by_ids' }, ids );
+  }
+
   updatePersonal(id: number, updatePersonalDto: UpdatePersonalDto) {
     return this.personalClient.send({ cmd: 'update_personal' }, { id, ...updatePersonalDto });
   }
@@ -32,4 +37,7 @@ export class PersonalClient {
   changeStatusPersonal(id: number, changeStatusPersonalDto: ChangeStatusPersonalDto) {
     return this.personalClient.send({ cmd: 'change_status_personal' }, { id, ...changeStatusPersonalDto });
   }
+
+
+  
 }
