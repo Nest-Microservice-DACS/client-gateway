@@ -117,5 +117,4 @@ Variables de entorno principales (ver `src/config/envs.ts`):
 - `KEYCLOAK_URL`: URL del servidor Keycloak
 - `KEYCLOAK_REALM`: Realm de autenticación
 - `KEYCLOAK_CLIENT_ID`: ID del cliente
-- `KEYCLOAK_SECRET`: Secreto del cliente
 
