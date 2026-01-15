@@ -92,7 +92,6 @@ npm run start:dev
    - Credenciales: admin / admin
 
 ## Endpoints Principales
-
 Cada módulo expone endpoints RESTfull. Ejemplo:
 
 - **Agenda:** `/agenda`
