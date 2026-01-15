@@ -82,16 +82,18 @@ src/
 npm run start:dev
 ```
 
-### Docker
-1. Docker instalado.
-2. Ejecutar:
+### Docker (Keycloak)
+1. Tener Docker instalado.
+2. Navegar a `src/auth/` y ejecutar:
    ```bash
    docker-compose up --build
    ```
+   Esto levanta el servidor Keycloak en `http://localhost:8080`
+   - Credenciales: admin / admin
 
 ## Endpoints Principales
 
-Cada módulo expone endpoints RESTful. Ejemplo:
+Cada módulo expone endpoints RESTfull. Ejemplo:
 
 - **Agenda:** `/agenda`
   - GET `/agenda` - Listar turnos
