@@ -95,8 +95,8 @@ npm run start:dev
 Cada módulo expone endpoints RESTfull. Ejemplo:
 
 - **Agenda:** `/agenda`
-  - GET `/agenda` - Listar turnos
-  - POST `/agenda` - Crear turno
+  - GET `/agenda` - Listar turnos con filtrado por estado
+  - POST `/agenda` - Crear turno con validación de disponibilidad
   - PATCH `/agenda/:id` - Actualizar turno
   - DELETE `/agenda/:id` - Eliminar turno
 
