@@ -30,7 +30,7 @@ Este gateway centraliza y orquesta las operaciones de los distintos microservici
 
 ## Tech Stack del proyecto
 - Framework: NestJS v11 (API REST con TypeScript)
-- Autenticación: Integracion con Keycloak + Passport.js (JWT con JWKS-RSA).
+- Autenticación: Integracion con Keycloak + Passport.js (JWT con JWKS-RSA)
 - Microservicios: @nestjs/microservices (comunicación entre servicios mediante TPC )
 - Bases de datos: PostgreSQL (en microservicios)
 - Prisma: ORM y toolkit para acceso y gestión de datos en bases de datos relacionales
