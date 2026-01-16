@@ -82,7 +82,7 @@ src/
 ```bash
 npm run start:dev
 ```
-s
+
 ### Docker (Keycloak)
 1. Tener Docker instalado.
 2. Navegar a `src/auth/` y ejecutar:
